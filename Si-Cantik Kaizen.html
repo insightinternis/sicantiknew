@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#005baa">
+    <title>Si-Cantik | RSUD R.T. NOTOPURO SIDOARJO</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <!-- Font Awesome Icons -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/js/all.min.js"></script>
+    <!-- Google Fonts Inter & Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- QRCode.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandBlue: '#005baa',
+                        brandDarkBlue: '#003e75',
+                        brandAccent: '#0ea5e9',
+                        cardBlue: '#eff6ff',
+                        cardRed: '#fef2f2',
+                        cardYellow: '#fffbeb',
+                        cardGreen: '#f0fdf4',
+                        cardPurple: '#faf5ff'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Outfit', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            body {
+                background: white !important;
+                padding: 0 !important;
+            }
+            .print-container {
+                box-shadow: none !important;
+                border: none !important;
+                max-width: 100% !important;
+                width: 100% !important;
+                margin: 0 !important;
+            }
+            @page {
+                size: A3 landscape;
+                margin: 0.8cm;
+            }
+        }
+        
+        .pulse-alert-red {
+            animation: pulse-red 2s infinite;
+        }
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .pulse-alert-yellow {
+            animation: pulse-yellow 2s infinite;
+        }
+        @keyframes pulse-yellow {
+            0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+            70% { box-shadow: 0 0 0 12px rgba(245, 158, 11, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 font-sans min-h-screen text-slate-800 flex flex-col justify-between">
+
+    <!-- TOP CONTROL NAVIGATION & ROLE SWITCHER (No Print) -->
+    <header class="no-print bg-slate-900 text-white sticky top-0 z-40 shadow-lg border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
+            
+            <!-- Logo & App Title -->
+            <div class="flex items-center gap-3">
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-2 rounded-xl font-black text-white text-lg tracking-wider shadow">
+                    SIP
+                </div>
+                <div>
+                    <h1 class="font-heading font-bold text-base md:text-lg leading-tight flex items-center gap-2">
+                        <span>Si-Cantik</span>
+                        <span class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full uppercase tracking-wider font-semibold">Kaizen Verified</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Papan Informasi Visual Pasien Ruang Rawat Inap RSUD R.T. Notopuro</p>
+                </div>
+            </div>
+
+            <!-- Role Selector & Action Buttons -->
+            <div class="flex flex-wrap items-center gap-2">
+                
+                <!-- Role Toggle Switcher -->
+                <div class="bg-slate-800 p-1 rounded-xl border border-slate-700 flex items-center">
+                    <button id="roleNurseBtn" onclick="switchUserRole('nurse')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-blue-600 text-white shadow">
+                        <i class="fa-solid fa-user-nurse"></i> Mode Perawat
+                    </button>
+                    <button id="roleDoctorBtn" onclick="switchUserRole('doctor')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-user-doctor"></i> Mode Dokter
+                    </button>
+                    <button id="rolePatientBtn" onclick="switchUserRole('patient')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-hospital-user"></i> Mode Pasien / Keluarga
+                    </button>
+                </div>
+
+                <!-- Action Controls (Visible for Nurse) -->
+                <div id="nurseActions" class="flex items-center gap-2">
+                    <button onclick="openEditModal()" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-500 transition shadow flex items-center gap-1.5">
+                        <i class="fa-solid fa-pen-to-square"></i> Edit Data
+                    </button>
+                    <button onclick="window.print()" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-700 text-slate-200 hover:bg-slate-600 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-print"></i> Cetak A3
+                    </button>
+                    <button onclick="confirmReset()" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-rose-900/80 text-rose-200 hover:bg-rose-800 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-rotate-left"></i> Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ROLE NOTIFICATION BAR FOR PATIENT / FAMILY (No Print) -->
+    <div id="patientModeBanner" class="no-print hidden bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white py-2 px-4 text-center text-xs border-b border-blue-700 flex items-center justify-center gap-2">
+        <i class="fa-solid fa-eye text-sky-400"></i>
+        <span><strong>Mode Pasien / Keluarga (Read-Only):</strong> Anda sedang melihat papan informasi visual tempat tidur. Pengeditan hanya dapat dilakukan oleh perawat jaga.</span>
+    </div>
+
+    <!-- MAIN BOARD DISPLAY WRAPPER -->
+    <main class="flex-grow p-3 md:p-6 max-w-7xl mx-auto w-full">
+        
+        <!-- Toast Alert Notification -->
+        <div id="toast" class="hidden fixed bottom-5 right-5 z-50 bg-emerald-800 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 border border-emerald-500 transition-all">
+            <i class="fa-solid fa-circle-check text-xl"></i>
+            <span id="toastMsg" class="text-sm font-semibold">Data berhasil diperbarui!</span>
+        </div>
+
+        <!-- PRINTABLE BOARD CONTAINER -->
+        <div id="printableBoard" class="print-container bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden flex flex-col justify-between">
+            
+            <!-- HEADER SECTION -->
+            <div class="bg-gradient-to-r from-brandDarkBlue via-brandBlue to-indigo-900 text-white p-4 md:p-6 flex flex-wrap items-center justify-between gap-4 border-b-4 border-sky-400">
+                <div class="flex items-center gap-4">
+                    <div class="bg-white p-2 md:p-2.5 rounded-2xl shadow-md w-14 h-14 md:w-16 md:h-16 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-10 h-10 text-emerald-600" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.89 2 1.99 2H19c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="font-heading text-xl md:text-3xl font-black tracking-tight uppercase leading-none">
+                            Si-Cantik <span class="font-light text-sky-200 text-lg md:text-2xl">| Papan Visual Pasien</span>
+                        </h2>
+                        <div class="flex items-center gap-2 mt-1.5 flex-wrap">
+                            <span class="text-sm md:text-base font-bold text-white">RSUD R.T. NOTOPURO SIDOARJO</span>
+                            <span class="text-slate-300">•</span>
+                            <span id="dispRuanganHeader" class="bg-sky-500/30 text-sky-100 px-3 py-0.5 rounded-full text-xs md:text-sm font-bold border border-sky-400/40">
+                                Ruang Rawat Inap: -
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-right hidden sm:block">
+                    <div class="text-[11px] uppercase tracking-wider text-sky-200 font-semibold">Waktu Real-Time</div>
+                    <div id="liveClock" class="font-mono text-xs md:text-sm font-bold text-white bg-black/20 px-3 py-1 rounded-xl border border-white/10">--:--:--</div>
+                </div>
+            </div>
+
+            <!-- BOARD CONTENT GRID (3 COLUMNS) -->
+            <div class="p-4 md:p-6 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5 bg-slate-50/70">
+                
+                <!-- CARD 1: IDENTITAS PASIEN -->
+                <div class="bg-blue-50/70 border-2 border-blue-300 rounded-2xl p-4 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between border-b-2 border-blue-200 pb-2.5 mb-3">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-base shadow">
+                                    <i class="fa-solid fa-bed-pulse"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-heading font-black text-blue-950 text-base leading-tight">Nama Pasien / Bed / Usia</h3>
+                                    <p class="text-[11px] text-blue-700 font-medium">Identitas Utama Rawat Inap</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-2 text-slate-800">
+                            <div>
+                                <span class="text-[11px] text-blue-800 font-bold uppercase tracking-wider block">Nama Pasien:</span>
+                                <div id="dispNama" class="font-black text-xl md:text-2xl text-slate-900 leading-tight truncate">-</div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 pt-1">
+                                <div class="bg-white p-2.5 rounded-xl border border-blue-200 shadow-sm">
+                                    <span class="text-[10px] text-blue-700 font-bold block uppercase">No. Bed / Bed:</span>
+                                    <span id="dispBed" class="font-black text-lg md:text-xl text-blue-900 block">-</span>
+                                </div>
+                                <div class="bg-white p-2.5 rounded-xl border border-blue-200 shadow-sm">
+                                    <span class="text-[10px] text-blue-700 font-bold block uppercase">Usia:</span>
+                                    <span id="dispUsia" class="font-extrabold text-base md:text-lg text-slate-800 block">- tahun</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-blue-200/80 flex items-center justify-between text-[11px]">
+                        <span class="text-blue-700 font-semibold">Ruang: <strong id="dispRuanganSub">-</strong></span>
+                        <span id="dispVerif" class="text-blue-600 font-bold bg-blue-100 px-2 py-0.5 rounded-md">Belum diverifikasi</span>
+                    </div>
+                </div>
+
+                <!-- CARD 2: DPJP / DOKTER PENANGGUNG JAWAB -->
+                <div class="bg-blue-50/70 border-2 border-blue-300 rounded-2xl p-4 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2.5 border-b-2 border-blue-200 pb-2.5 mb-3">
+                            <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-base shadow">
+                                <i class="fa-solid fa-user-doctor"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-heading font-black text-blue-950 text-base leading-tight">DPJP / Dokter Jawab</h3>
+                                <p class="text-[11px] text-blue-700 font-medium">Penanggung Jawab Medis Pasien</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2.5">
+                            <div>
+                                <span class="text-[11px] text-blue-800 font-bold uppercase tracking-wider block">Dokter Penanggung Jawab:</span>
+                                <div id="dispDokter" class="font-extrabold text-base md:text-lg text-slate-900 leading-snug">-</div>
+                            </div>
+                            <div class="bg-white p-2.5 rounded-xl border border-blue-200 shadow-sm">
+                                <span class="text-[10px] text-blue-700 font-bold block uppercase">Kontak HP / SIP Dokter:</span>
+                                <span id="dispKontakDokter" class="font-mono text-xs md:text-sm font-semibold text-slate-800 block">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-blue-200/80 text-right">
+                        <span class="text-[11px] text-blue-700 font-semibold">Instalasi Pelayanan Medis</span>
+                    </div>
+                </div>
+
+                <!-- CARD 3: ALERGI PASIEN (HIGH VISIBILITY WARNING) -->
+                <div id="cardAlergiContainer" class="bg-rose-50/80 border-2 border-rose-400 rounded-2xl p-4 shadow-sm hover:shadow-md transition flex flex-col justify-between relative overflow-hidden">
+                    <div>
+                        <div class="flex items-center justify-between border-b-2 border-rose-200 pb-2.5 mb-3">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-9 h-9 rounded-xl bg-rose-600 text-white flex items-center justify-center font-bold text-base shadow">
+                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-heading font-black text-rose-950 text-base leading-tight">ALERGI PASIEN</h3>
+                                    <p class="text-[11px] text-rose-700 font-medium">Obat / Makanan / Lainnya</p>
+                                </div>
+                            </div>
+                            <span id="badgeAlergiStatus" class="text-[10px] bg-rose-600 text-white px-2.5 py-1 rounded-full font-black uppercase">PERINGATAN</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-rose-200 shadow-sm min-h-[85px] flex items-center justify-center text-center">
+                            <p id="dispAlergi" class="font-black text-rose-700 text-base md:text-lg uppercase tracking-wide leading-tight">
+                                - TIDAK ADA ALERGI -
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-rose-200/80 text-center text-[11px] font-bold text-rose-800 uppercase tracking-wider">
+                        <i class="fa-solid fa-shield-halved text-rose-600 mr-1"></i> Utamakan Keselamatan Pasien
+                    </div>
+                </div>
+
+                <!-- CARD 4: RISIKO JATUH & DIET -->
+                <div class="bg-amber-50/80 border-2 border-amber-300 rounded-2xl p-4 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2.5 border-b-2 border-amber-200 pb-2.5 mb-3">
+                            <div class="w-9 h-9 rounded-xl bg-amber-600 text-white flex items-center justify-center font-bold text-base shadow">
+                                <i class="fa-solid fa-person-falling-burst"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-heading font-black text-amber-950 text-base leading-tight">Risiko Jatuh & Diet</h3>
+                                <p class="text-[11px] text-amber-800 font-medium">Proteksi Keamanan & Nutrisi</p>
+                            </div>
+                        </div>
+
+                        <!-- Status Risiko Jatuh -->
+                        <div class="mb-3">
+                            <span class="text-[11px] text-amber-800 font-bold uppercase block mb-1">Status Risiko Jatuh:</span>
+                            <div id="dispRisikoJatuh" class="w-full py-2 px-3 rounded-xl font-black text-center text-xs md:text-sm border border-amber-400 bg-amber-200 text-amber-950">
+                                [ ] TIDAK ADA RISIKO
+                            </div>
+                        </div>
+
+                        <!-- Status Diet -->
+                        <div>
+                            <span class="text-[11px] text-amber-800 font-bold uppercase block mb-1">Diet Pasien:</span>
+                            <div id="dispDiet" class="bg-white p-2.5 rounded-xl border border-amber-200 font-bold text-xs md:text-sm text-slate-900 shadow-sm leading-snug">
+                                -
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-amber-200/80 text-right text-[11px] text-amber-800 font-semibold">
+                        Kewaspadaan Jatuh Interaktif
+                    </div>
+                </div>
+
+                <!-- CARD 5: PERAWAT JAGA HARI INI -->
+                <div class="bg-emerald-50/70 border-2 border-emerald-300 rounded-2xl p-4 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2.5 border-b-2 border-emerald-200 pb-2.5 mb-3">
+                            <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-base shadow">
+                                <i class="fa-solid fa-user-nurse"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-heading font-black text-emerald-950 text-base leading-tight">Perawat Jaga Hari Ini</h3>
+                                <p class="text-[11px] text-emerald-700 font-medium">Jadwal Penanggung Jawab Shift</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2 text-xs">
+                            <div class="p-2 bg-white rounded-xl border border-emerald-200 shadow-sm flex items-center justify-between">
+                                <span class="font-bold text-emerald-900 text-[10px] uppercase">Shift Pagi (07.00 - 14.00):</span>
+                                <span id="dispShiftPagi" class="font-bold text-slate-900 text-xs">-</span>
+                            </div>
+                            <div class="p-2 bg-white rounded-xl border border-emerald-200 shadow-sm flex items-center justify-between">
+                                <span class="font-bold text-emerald-900 text-[10px] uppercase">Shift Siang (14.00 - 21.00):</span>
+                                <span id="dispShiftSiang" class="font-bold text-slate-900 text-xs">-</span>
+                            </div>
+                            <div class="p-2 bg-white rounded-xl border border-emerald-200 shadow-sm flex items-center justify-between">
+                                <span class="font-bold text-emerald-900 text-[10px] uppercase">Shift Malam (21.00 - 07.00):</span>
+                                <span id="dispShiftMalam" class="font-bold text-slate-900 text-xs">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-emerald-200/80 text-right text-[11px] text-emerald-700 font-semibold">
+                        Asuhan Keperawatan 24 Jam
+                    </div>
+                </div>
+
+                <!-- CARD 6: RENCANA ASUHAN HARI INI -->
+                <div class="bg-emerald-50/70 border-2 border-emerald-300 rounded-2xl p-4 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2.5 border-b-2 border-emerald-200 pb-2.5 mb-3">
+                            <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-base shadow">
+                                <i class="fa-solid fa-stethoscope"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-heading font-black text-emerald-950 text-base leading-tight">Rencana Asuhan Hari Ini</h3>
+                                <p class="text-[11px] text-emerald-700 font-medium">Tindakan & Diagnostic Target</p>
+                            </div>
+                        </div>
+                        <div id="dispRencanaAsuhan" class="space-y-2 text-xs">
+                            <!-- Dynamic Items Rendered Here -->
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-emerald-200/80 text-right text-[11px] text-emerald-700 font-semibold">
+                        Evaluasi Pelayanan Harian
+                    </div>
+                </div>
+
+                <!-- CARD 7 & 8: EDUKASI YANG SUDAH DIBERIKAN -->
+                <div class="md:col-span-3 bg-emerald-50/70 border-2 border-emerald-300 rounded-2xl p-4 shadow-sm hover:shadow-md transition">
+                    <div class="flex items-center gap-2.5 border-b-2 border-emerald-200 pb-2.5 mb-3">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-base shadow">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-heading font-black text-emerald-950 text-base leading-tight">Edukasi Yang Sudah Diberikan</h3>
+                            <p class="text-[11px] text-emerald-700 font-medium">Komunikasi, Informasi, & Edukasi (KIE) Kepada Pasien & Keluarga</p>
+                        </div>
+                    </div>
+                    <div id="dispEdukasi" class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                        <!-- Dynamic Edukasi Items Rendered Here -->
+                    </div>
+                </div>
+
+                <!-- KAIZEN CARDS -->
+                <div class="md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
+                    <div class="bg-violet-50/70 border-2 border-violet-300 rounded-2xl p-4 shadow-sm flex flex-col">
+                        <div class="flex items-center gap-2.5 border-b-2 border-violet-200 pb-2.5 mb-3">
+                            <div class="w-9 h-9 rounded-xl bg-violet-600 text-white flex items-center justify-center shadow"><i class="fa-solid fa-notes-medical"></i></div>
+                            <div><h3 class="font-heading font-black text-violet-950 text-base leading-tight">Visite DPJP Hari Ini</h3><p class="text-[11px] text-violet-700 font-medium">Ringkasan &amp; instruksi dokter</p></div>
+                        </div>
+                        <div id="dispVisite" class="space-y-2 text-xs flex-1"></div>
+                        <div id="visiteEdit" class="no-print hidden mt-3 space-y-2 border-t border-violet-200 pt-3">
+                            <textarea id="visiteCatatan" rows="2" class="w-full px-2.5 py-1.5 text-xs border border-violet-300 rounded-lg outline-none" placeholder="Ringkasan kondisi / hasil visite"></textarea>
+                            <textarea id="visiteInstruksi" rows="2" class="w-full px-2.5 py-1.5 text-xs border border-violet-300 rounded-lg outline-none" placeholder="Instruksi untuk perawat &amp; keluarga"></textarea>
+                            <button onclick="saveVisite()" class="w-full py-1.5 rounded-lg bg-violet-600 text-white text-xs font-bold hover:bg-violet-500"><i class="fa-solid fa-floppy-disk mr-1"></i> Simpan Visite</button>
+                        </div>
+                    </div>
+                    <div class="bg-sky-50/70 border-2 border-sky-300 rounded-2xl p-4 shadow-sm flex flex-col">
+                        <div class="flex items-center gap-2.5 border-b-2 border-sky-200 pb-2.5 mb-3">
+                            <div class="w-9 h-9 rounded-xl bg-sky-600 text-white flex items-center justify-center shadow"><i class="fa-solid fa-list-check"></i></div>
+                            <div><h3 class="font-heading font-black text-sky-950 text-base leading-tight">Kemajuan &amp; Kesiapan Pulang</h3><p class="text-[11px] text-sky-700 font-medium">Tindakan hari ini &amp; kriteria KRS</p></div>
+                        </div>
+                        <div class="flex items-center gap-2 mb-2"><div class="flex-1 h-2.5 bg-sky-100 rounded-full overflow-hidden"><div id="barProgress" class="h-full bg-sky-600 rounded-full transition-all" style="width:0%"></div></div><span id="txtProgress" class="text-[11px] font-black text-sky-900">0%</span></div>
+                        <div id="dispTasks" class="space-y-1 text-xs mb-3"></div>
+                        <div class="text-[10px] font-bold text-sky-800 uppercase tracking-wider mb-1">Kriteria Pulang (<span id="txtKrs">0/5</span>)</div>
+                        <div id="dispKrs" class="space-y-1 text-xs"></div>
+                    </div>
+                    <div id="cardSuara" class="bg-amber-50/70 border-2 border-amber-300 rounded-2xl p-4 shadow-sm flex flex-col">
+                        <div class="flex items-center justify-between border-b-2 border-amber-200 pb-2.5 mb-3">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-9 h-9 rounded-xl bg-amber-600 text-white flex items-center justify-center shadow"><i class="fa-solid fa-comments"></i></div>
+                                <div><h3 class="font-heading font-black text-amber-950 text-base leading-tight">Suara Pasien</h3><p class="text-[11px] text-amber-800 font-medium">Permintaan &amp; kepuasan</p></div>
+                            </div>
+                            <span id="badgeReq" class="no-print hidden text-[10px] bg-rose-600 text-white px-2 py-0.5 rounded-full font-black"></span>
+                        </div>
+                        <div id="reqButtons" class="no-print grid grid-cols-2 gap-1.5 mb-2"></div>
+                        <div id="reqNote" class="no-print hidden text-[11px] font-semibold text-sky-900 bg-sky-100 border border-sky-300 rounded-lg px-2 py-1 mb-2"><i class="fa-solid fa-bottle-water mr-1"></i> Pasien dalam pembatasan cairan. Perawat akan mengonfirmasi jumlah yang boleh diminum.</div>
+                        <div id="dispReq" class="space-y-1 text-xs mb-3"></div>
+                        <div class="no-print border-t border-amber-200 pt-2 mt-auto">
+                            <div class="text-[10px] font-bold text-amber-900 uppercase tracking-wider mb-1">Bagaimana pelayanan hari ini?</div>
+                            <div id="dispRating" class="flex gap-1 mb-1.5"></div>
+                            <div class="flex gap-1.5"><input id="inpFeedback" type="text" maxlength="160" class="flex-1 min-w-0 px-2.5 py-1.5 text-xs border border-amber-300 rounded-lg outline-none" placeholder="Saran / masukan (opsional)"><button onclick="sendFeedback()" class="px-3 rounded-lg bg-amber-600 text-white text-xs font-bold hover:bg-amber-500">Kirim</button></div>
+                            <div id="dispFeedback" class="text-[11px] text-amber-900 font-medium mt-1.5"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 9: FOOTER BOARD (TGL PULANG, KONTAK KELUARGA, QR CODE) -->
+                <div class="md:col-span-3 bg-gradient-to-r from-slate-900 via-blue-950 to-brandDarkBlue text-white rounded-2xl p-4 md:p-5 shadow-lg border-2 border-blue-900 flex flex-wrap md:flex-nowrap items-center justify-between gap-4">
+                    
+                    <!-- Tanggal Rencana Pulang -->
+                    <div class="flex items-center gap-3.5 bg-white/10 p-3 rounded-xl border border-white/15 flex-1 min-w-[240px]">
+                        <div class="w-11 h-11 rounded-xl bg-blue-600 flex items-center justify-center text-xl text-white font-bold flex-shrink-0 shadow">
+                            <i class="fa-solid fa-calendar-check"></i>
+                        </div>
+                        <div>
+                            <span class="text-[10px] text-blue-200 font-bold uppercase tracking-wider block">Tanggal Rencana Pulang:</span>
+                            <div id="dispTglPulang" class="font-black text-base md:text-lg text-yellow-300">Belum Ditentukan</div>
+                            <span id="dispEstimasiHari" class="text-[11px] text-blue-200 font-medium block"></span>
+                        </div>
+                    </div>
+
+                    <!-- Kontak Keluarga -->
+                    <div class="flex items-center gap-3.5 bg-white/10 p-3 rounded-xl border border-white/15 flex-1 min-w-[260px]">
+                        <div class="w-11 h-11 rounded-xl bg-emerald-600 flex items-center justify-center text-xl text-white font-bold flex-shrink-0 shadow">
+                            <i class="fa-solid fa-address-book"></i>
+                        </div>
+                        <div class="space-y-0.5">
+                            <span class="text-[10px] text-blue-200 font-bold uppercase tracking-wider block">Kontak Keluarga (PIC Utama):</span>
+                            <div id="dispNamaKeluarga" class="font-bold text-sm md:text-base text-white truncate">-</div>
+                            <div id="dispHpKeluarga" class="font-mono text-xs text-emerald-300 font-semibold">-</div>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic QR Code Container -->
+                    <div class="flex items-center gap-3 bg-white text-slate-900 p-2.5 rounded-xl shadow-md min-w-[210px] justify-between border border-slate-200">
+                        <div>
+                            <span class="text-xs font-black block text-blue-950 leading-tight">Scan Data Pasien</span>
+                            <span class="text-[10px] text-slate-500 block leading-tight">Akses E-Rekam Medis</span>
+                        </div>
+                        <div id="qrcode" class="p-1 bg-white rounded border border-slate-300 flex items-center justify-center"></div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- FOOTER LEGAL & HOSPITAL CREDIT BAR -->
+            <div class="bg-slate-200 text-slate-600 px-6 py-2 text-[10px] md:text-[11px] flex flex-wrap justify-between items-center border-t border-slate-300 font-semibold">
+                <div>Si-Cantik • Diisi & Diverifikasi Oleh Tenaga Kesehatan • Kerahasiaan Data Pasien Terjamin</div>
+                <div>Versi Digital bedside / Standard Cetak A3 • RSUD R.T. NOTOPURO SIDOARJO</div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- FORM EDIT MODAL FOR NURSE / ROLE PERAWAT ONLY (No Print) -->
+    <div id="editModal" class="no-print fixed inset-0 bg-slate-950/75 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto hidden">
+        <div class="bg-white w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden my-6 max-h-[90vh] flex flex-col border border-slate-200">
+            
+            <!-- Modal Header -->
+            <div class="bg-gradient-to-r from-slate-900 to-blue-950 text-white px-6 py-4 flex items-center justify-between border-b border-slate-800">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-heading font-bold text-base md:text-lg">Form Evaluasi & Edit Papan Pasien</h3>
+                        <p class="text-xs text-slate-400">Pembaruan Data Real-Time Ruang Rawat Inap</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeEditModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Form Content Scrollable -->
+            <form id="patientForm" onsubmit="savePatientData(event)" class="p-6 overflow-y-auto space-y-6 text-slate-800">
+                
+                <!-- SECTION 1: RUANGAN, PASIEN & DPJP -->
+                <div class="bg-blue-50/50 p-4 rounded-2xl border border-blue-200 space-y-4">
+                    <div class="flex items-center justify-between border-b border-blue-200 pb-2">
+                        <h4 class="font-heading font-bold text-blue-950 text-sm uppercase tracking-wide flex items-center gap-2">
+                            <i class="fa-solid fa-hospital-user text-blue-600"></i>
+                            1. Informasi Ruangan, Identitas Pasien & DPJP
+                        </h4>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Nama Ruang Rawat Inap</label>
+                            <input type="text" id="inputRuangan" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none font-semibold" placeholder="Contoh: Ruang Mawar / Dahlia" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Nama Pasien</label>
+                            <input type="text" id="inputNama" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none font-semibold" placeholder="Contoh: Ny. Siti Aminah" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">No. Bed / Tempat Tidur</label>
+                            <input type="text" id="inputBed" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none font-semibold" placeholder="Contoh: Bed 04B" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Usia Pasien (Tahun)</label>
+                            <input type="number" id="inputUsia" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none font-semibold" placeholder="45" required>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Nama Dokter DPJP</label>
+                            <input type="text" id="inputDokter" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none font-semibold" placeholder="dr. Ahmad Sp.PD">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Kontak HP / SIP Dokter DPJP</label>
+                            <input type="text" id="inputKontakDokter" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none font-semibold" placeholder="SIP: 440/123/2024 | 0812-3456-7890">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 2: ALERGI, RISIKO JATUH & DIET -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    
+                    <!-- Card Alergi Input -->
+                    <div class="bg-rose-50/50 p-4 rounded-2xl border border-rose-200 space-y-3">
+                        <h4 class="font-heading font-bold text-rose-950 text-sm uppercase tracking-wide border-b border-rose-200 pb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-triangle-exclamation text-rose-600"></i>
+                            2. Peringatan Alergi Pasien
+                        </h4>
+                        <div>
+                            <label class="block text-xs font-bold text-rose-900 mb-1">Keterangan Alergi (Obat / Makanan / Lainnya)</label>
+                            <textarea id="inputAlergi" rows="2" class="w-full px-3 py-2 border border-rose-300 rounded-xl text-sm focus:ring-2 focus:ring-rose-500 outline-none font-semibold" placeholder="Contoh: Alergi Amoxicillin, Udang. (Kosongkan atau ketik Tidak Ada jika aman)"></textarea>
+                        </div>
+                        <div class="flex flex-wrap gap-1.5 pt-1">
+                            <span class="text-[10px] font-bold text-slate-500">Preset Cepat:</span>
+                            <button type="button" onclick="setAlergiPreset('TIDAK ADA ALERGI')" class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md font-bold hover:bg-emerald-200">Tidak Ada Alergi</button>
+                            <button type="button" onclick="setAlergiPreset('Alergi Obat Penisilin / Amoxicillin')" class="text-[10px] bg-rose-100 text-rose-800 px-2 py-0.5 rounded-md font-bold hover:bg-rose-200">Alergi Penisilin</button>
+                            <button type="button" onclick="setAlergiPreset('Alergi Makanan Seafood / Udang')" class="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md font-bold hover:bg-amber-200">Alergi Seafood</button>
+                        </div>
+                    </div>
+
+                    <!-- Card Risiko Jatuh & Diet Input -->
+                    <div class="bg-amber-50/50 p-4 rounded-2xl border border-amber-200 space-y-3">
+                        <h4 class="font-heading font-bold text-amber-950 text-sm uppercase tracking-wide border-b border-amber-200 pb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-person-falling text-amber-600"></i>
+                            3. Risiko Jatuh & Diet Pasien
+                        </h4>
+                        <div>
+                            <label class="block text-xs font-bold text-amber-900 mb-1">Status Risiko Jatuh</label>
+                            <select id="inputRisikoJatuh" class="w-full px-3 py-2 border border-amber-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 outline-none font-bold">
+                                <option value="Tidak">TIDAK BERISIKO (Risiko Rendah)</option>
+                                <option value="Ya">YA (RISIKO JATUH - GELANG KUNING Wajib)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-amber-900 mb-1">Keterangan Diet Pasien</label>
+                            <input type="text" id="inputDiet" class="w-full px-3 py-2 border border-amber-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 outline-none font-semibold" placeholder="Contoh: Lunak Rendah Garam 1700 kcal">
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- SECTION 3: TIM PERAWAT JAGA -->
+                <div class="bg-emerald-50/40 p-4 rounded-2xl border border-emerald-200 space-y-3">
+                    <h4 class="font-heading font-bold text-emerald-950 text-sm uppercase tracking-wide border-b border-emerald-200 pb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-user-nurse text-emerald-600"></i>
+                        4. Perawat Jaga Shift Hari Ini
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Shift Pagi (07.00 - 14.00)</label>
+                            <input type="text" id="inputShiftPagi" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-semibold" placeholder="Nama Perawat Pagi">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Shift Siang (14.00 - 21.00)</label>
+                            <input type="text" id="inputShiftSiang" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-semibold" placeholder="Nama Perawat Siang">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Shift Malam (21.00 - 07.00)</label>
+                            <input type="text" id="inputShiftMalam" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-semibold" placeholder="Nama Perawat Malam">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 4: RENCANA ASUHAN HARI INI & EDUKASI PASIEN -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    
+                    <!-- Rencana Asuhan Checkboxes & Detail -->
+                    <div class="bg-emerald-50/50 p-4 rounded-2xl border border-emerald-200 space-y-3">
+                        <h4 class="font-heading font-bold text-emerald-950 text-sm uppercase tracking-wide border-b border-emerald-200 pb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-clipboard-check text-emerald-600"></i>
+                            5. Rencana Asuhan Hari Ini
+                        </h4>
+                        
+                        <div class="space-y-2">
+                            <!-- Lab -->
+                            <div class="p-2.5 bg-white rounded-xl border border-emerald-200 space-y-1">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="chkLab" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="font-bold text-xs text-slate-900">Lab - Pemeriksaan Laboratorium</span>
+                                </label>
+                                <input type="text" id="inputDetailLab" class="w-full px-2.5 py-1 text-xs border rounded-lg outline-none" placeholder="Detail Lab: Darah Lengkap, DL, SGOT/SGPT">
+                            </div>
+
+                            <!-- Rontgen -->
+                            <div class="p-2.5 bg-white rounded-xl border border-emerald-200 space-y-1">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="chkRontgen" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="font-bold text-xs text-slate-900">Rontgen / Pemeriksaan Radiologi</span>
+                                </label>
+                                <input type="text" id="inputDetailRontgen" class="w-full px-2.5 py-1 text-xs border rounded-lg outline-none" placeholder="Detail Rontgen: Thorax AP/PA, USG Abdomen">
+                            </div>
+
+                            <!-- Obat-Obatan -->
+                            <div class="p-2.5 bg-white rounded-xl border border-emerald-200 space-y-1">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="chkObat" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="font-bold text-xs text-slate-900">Obat - Pemberian Obat Sesuai Resep</span>
+                                </label>
+                                <input type="text" id="inputDetailObat" class="w-full px-2.5 py-1 text-xs border rounded-lg outline-none" placeholder="Detail Obat: Injeksi Ceftriaxone 2x1 gr, IVFD RL 20 tpm">
+                            </div>
+
+                            <!-- Cek Kadar Gula Puasa / GDA (Kaizen Addition) -->
+                            <div class="p-2.5 bg-amber-50 rounded-xl border border-amber-300 space-y-1">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="chkGula" class="w-4 h-4 text-amber-600 rounded">
+                                    <span class="font-bold text-xs text-amber-950">Cek Kadar Gula Puasa / GDA (Kaizen)</span>
+                                </label>
+                                <input type="text" id="inputDetailGula" class="w-full px-2.5 py-1 text-xs border rounded-lg outline-none" placeholder="Detail: Cek GDP jam 06.00 WIB / Target GDA < 180">
+                            </div>
+
+                            <!-- Mobilisasi -->
+                            <div class="p-2.5 bg-white rounded-xl border border-emerald-200 space-y-1">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="chkMobilisasi" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="font-bold text-xs text-slate-900">Mobilisasi / Fisioterapi / Latih Gerak</span>
+                                </label>
+                                <input type="text" id="inputDetailMobilisasi" class="w-full px-2.5 py-1 text-xs border rounded-lg outline-none" placeholder="Detail: Miring kanan-kiri tiap 2 jam, latihan duduk">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-emerald-950 mb-1">Rencana Asuhan Tambahan / Lain-Lain</label>
+                            <input type="text" id="inputAsuhanCustom" class="w-full px-3 py-2 border rounded-xl text-sm outline-none" placeholder="Contoh: Ganti Verband luka operasi jam 10.00">
+                        </div>
+                    </div>
+
+                    <!-- Edukasi Checkboxes & Detail -->
+                    <div class="bg-emerald-50/50 p-4 rounded-2xl border border-emerald-200 space-y-3">
+                        <h4 class="font-heading font-bold text-emerald-950 text-sm uppercase tracking-wide border-b border-emerald-200 pb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-book-open-reader text-emerald-600"></i>
+                            6. Edukasi Yang Sudah Diberikan
+                        </h4>
+                        
+                        <div class="space-y-2">
+                            <!-- Cuci Tangan 6 Langkah -->
+                            <div class="p-2.5 bg-white rounded-xl border border-emerald-200 space-y-1">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="chkCuciTangan" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="font-bold text-xs text-slate-900">6 Langkah Cuci Tangan WHO</span>
+                                </label>
+                                <span class="text-[11px] text-slate-500 block italic leading-tight">Edukasi kebersihan tangan 6 langkah dengan air/handrub.</span>
+                            </div>
+
+                            <!-- Etika Batuk Jelas -->
+                            <div class="p-2.5 bg-white rounded-xl border border-emerald-200 space-y-1">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="chkEtikaBatuk" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="font-bold text-xs text-slate-900">Etika Batuk Secara Jelas</span>
+                                </label>
+                                <span class="text-[11px] text-slate-500 block italic leading-tight">Tutup mulut/hidung dengan tisu/siku bagian dalam & masker.</span>
+                            </div>
+
+                            <!-- Nutrisi & Cairan -->
+                            <div class="p-2.5 bg-white rounded-xl border border-emerald-200 space-y-1">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="chkNutrisi" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="font-bold text-xs text-slate-900">Nutrisi - Makanan Sesuai Diet & Cukup Cairan</span>
+                                </label>
+                            </div>
+
+                            <!-- Pembatasan Cairan (Kaizen Special) -->
+                            <div class="p-2.5 bg-sky-50 rounded-xl border border-sky-300 space-y-1">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="chkPembatasanCairan" class="w-4 h-4 text-sky-600 rounded">
+                                    <span class="font-bold text-xs text-sky-950">Pentingnya Pembatasan Asupan Cairan (Kaizen)</span>
+                                </label>
+                                <input type="text" id="inputDetailCairan" class="w-full px-2.5 py-1 text-xs border rounded-lg outline-none" placeholder="Detail: Batasi cairan maks 1000 cc/24 jam">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-emerald-950 mb-1">Catatan Edukasi Tambahan</label>
+                            <input type="text" id="inputEdukasiCustom" class="w-full px-3 py-2 border rounded-xl text-sm outline-none" placeholder="Contoh: Edukasi cara mobilisasi mandiri">
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- SECTION 5: RENCANA PULANG & KONTAK KELUARGA -->
+                <div class="bg-blue-50/50 p-4 rounded-2xl border border-blue-200 space-y-3">
+                    <h4 class="font-heading font-bold text-blue-950 text-sm uppercase tracking-wide border-b border-blue-200 pb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-day text-blue-600"></i>
+                        7. Tanggal Rencana Pulang & Kontak Keluarga (PIC)
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Tanggal Rencana Pulang (KRS)</label>
+                            <input type="date" id="inputTglPulang" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none font-semibold">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Nama Kontak Keluarga PIC</label>
+                            <input type="text" id="inputNamaKeluarga" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none font-semibold" placeholder="Contoh: Bpk. Budi (Suami)">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">No. HP / WhatsApp Keluarga</label>
+                            <input type="tel" id="inputHpKeluarga" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none font-semibold" placeholder="081234567890">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Form Controls -->
+                <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-200 sticky bottom-0 bg-white py-2">
+                    <button type="button" onclick="closeEditModal()" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-slate-200 text-slate-700 hover:bg-slate-300 transition">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-6 py-2.5 rounded-xl text-sm font-bold bg-blue-600 text-white hover:bg-blue-500 transition shadow-lg flex items-center gap-2">
+                        <i class="fa-solid fa-floppy-disk"></i> Simpan & Tampilkan Papan
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+    <!-- MAIN JAVASCRIPT APP LOGIC -->
+    <script>
+        // Default Master State Data Pasien
+        const defaultData = {
+            ruangan: "Ruang Dahlia 3A",
+            nama: "Bpk. Bambang Triyono",
+            bed: "Dahlia 03B",
+            usia: "58",
+            dokter: "dr. Hendra Prasetya, Sp.PD",
+            kontakDokter: "SIP: 440/098/2023 | 0811-3456-789",
+            alergi: "Alergi Obat Penisilin & Seafood",
+            risikoJatuh: "Ya", // "Ya" or "Tidak"
+            diet: "Lunak Tinggi Protein, Rendah Garam 1500 kcal",
+            shiftPagi: "Ns. Maya, S.Kep",
+            shiftSiang: "Ns. Rizky, Amd.Kep",
+            shiftMalam: "Ns. Doni, Amd.Kep",
+            rencanaAsuhan: {
+                lab: true,
+                detailLab: "Cek Darah Lengkap & Elekrolit jam 07.00",
+                rontgen: true,
+                detailRontgen: "Rontgen Thorax AP/PA Siang",
+                obat: true,
+                detailObat: "Injeksi Ceftriaxone 2x1gr, IVFD RL 20 tpm",
+                gula: true,
+                detailGula: "Cek GDP 06.00 WIB (Target < 140 mg/dL)",
+                mobilisasi: true,
+                detailMobilisasi: "Miring Kanan/Kiri tiap 2 jam",
+                custom: "Ganti Verband Luka Operasi jam 10.00 WIB"
+            },
+            edukasi: {
+                cuciTangan: true,
+                etikaBatuk: true,
+                nutrisi: true,
+                pembatasanCairan: true,
+                detailCairan: "Batasi asupan cairan maksimal 1000 cc / 24 Jam",
+                custom: "Penjelasan Tanda Bahaya Sesak Napas"
+            },
+            tglPulang: "2026-11-06",
+            namaKeluarga: "Ibu Rahmawati (Istri)",
+            hpKeluarga: "0812-3456-7890"
+        };
+
+        let currentData = structuredClone(defaultData);
+        let userRole = 'nurse'; // 'nurse' or 'patient'
+
+        // Initialize App on DOM Loaded
+        window.addEventListener('DOMContentLoaded', () => {
+            loadStoredData();
+            updateLiveClock();
+            setInterval(updateLiveClock, 1000);
+        });
+
+        // Real-Time Clock Function
+        function updateLiveClock() {
+            const now = new Date();
+            const dateOptions = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+            const dateStr = now.toLocaleDateString('id-ID', dateOptions);
+            const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            
+            const clockElem = document.getElementById('liveClock');
+            if (clockElem) {
+                clockElem.innerText = `${dateStr} • ${timeStr} WIB`;
+            }
+        }
+
+        // Switch User Access Roles (Nurse vs Patient/Family)
+        function switchUserRole(role) {
+            userRole = role;
+            const nurseBtn = document.getElementById('roleNurseBtn');
+            const patientBtn = document.getElementById('rolePatientBtn');
+            const nurseActions = document.getElementById('nurseActions');
+            const patientBanner = document.getElementById('patientModeBanner');
+
+            if (role === 'nurse') {
+                nurseBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-blue-600 text-white shadow";
+                patientBtn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5";
+                nurseActions.classList.remove('hidden');
+                patientBanner.classList.add('hidden');
+                showToast("Beralih ke Mode Perawat (Hak Akses Edit Aktif)");
+            } else {
+                patientBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-emerald-600 text-white shadow";
+                nurseBtn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5";
+                nurseActions.classList.add('hidden');
+                patientBanner.classList.remove('hidden');
+                closeEditModal();
+                showToast("Beralih ke Mode Pasien / Keluarga (Tampilan Read-Only)");
+            }
+        }
+
+        // Open & Close Edit Modal Form
+        function openEditModal() {
+            if (userRole !== 'nurse') {
+                alert("Pengeditan data hanya dapat diakses oleh Perawat bertugas.");
+                return;
+            }
+            populateFormWithCurrentData();
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.add('hidden');
+        }
+
+        // Local Storage Handlers
+        function loadStoredData() {
+            const saved = (()=>{try{return localStorage.getItem('sip_cantik_patient_kaizen_data')}catch(e){return null}})();
+            if (saved) {
+                try {
+                    currentData = JSON.parse(saved);
+                } catch(e) {
+                    console.error("Gagal membaca LocalStorage", e);
+                }
+            }
+            renderDisplay();
+        }
+
+        function saveDataToStorage() {
+            try{localStorage.setItem('sip_cantik_patient_kaizen_data', JSON.stringify(currentData));}catch(e){}
+        }
+
+        function confirmReset() {
+            if (confirm("Apakah Anda yakin ingin mereset papan informasi pasien ke data awal?")) {
+                currentData = structuredClone(defaultData);
+                saveDataToStorage();
+                renderDisplay();
+                showToast("Data papan berhasil di-reset!");
+            }
+        }
+
+        // Render Data to Main Board UI
+        function renderDisplay() {
+            // Header Ruangan
+            const ruangText = currentData.ruangan || 'Ruang Rawat Inap';
+            document.getElementById('dispRuanganHeader').innerText = `Ruang: ${ruangText}`;
+            document.getElementById('dispRuanganSub').innerText = ruangText;
+
+            // Card 1: Identitas
+            document.getElementById('dispNama').innerText = currentData.nama || '-';
+            document.getElementById('dispBed').innerText = currentData.bed || '-';
+            document.getElementById('dispUsia').innerText = `${currentData.usia || '-'} tahun`;
+
+            // Card 2: DPJP
+            document.getElementById('dispDokter').innerText = currentData.dokter || '-';
+            document.getElementById('dispKontakDokter').innerText = currentData.kontakDokter || '-';
+
+            // Card 3: Alergi Pasien
+            const dispAlergi = document.getElementById('dispAlergi');
+            const cardAlergiContainer = document.getElementById('cardAlergiContainer');
+            const badgeAlergiStatus = document.getElementById('badgeAlergiStatus');
+
+            const hasAlergi = currentData.alergi && currentData.alergi.trim() !== '' && !currentData.alergi.toLowerCase().includes('tidak ada');
+
+            if (hasAlergi) {
+                dispAlergi.innerText = currentData.alergi;
+                dispAlergi.className = "font-black text-rose-700 text-base md:text-lg uppercase tracking-wide leading-tight";
+                cardAlergiContainer.classList.add('pulse-alert-red');
+                badgeAlergiStatus.innerText = "ADA ALERGI";
+                badgeAlergiStatus.className = "text-[10px] bg-rose-600 text-white px-2.5 py-1 rounded-full font-black uppercase";
+            } else {
+                dispAlergi.innerText = "- TIDAK ADA ALERGI -";
+                dispAlergi.className = "font-bold text-slate-400 text-sm uppercase tracking-wide";
+                cardAlergiContainer.classList.remove('pulse-alert-red');
+                badgeAlergiStatus.innerText = "AMAN";
+                badgeAlergiStatus.className = "text-[10px] bg-emerald-600 text-white px-2.5 py-1 rounded-full font-black uppercase";
+            }
+
+            // Card 4: Risiko Jatuh & Diet
+            const dispRisiko = document.getElementById('dispRisikoJatuh');
+            if (currentData.risikoJatuh === "Ya") {
+                dispRisiko.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-rose-600 mr-1.5"></i> RISIKO JATUH : YA (TINGGI)`;
+                dispRisiko.className = "w-full py-2 px-3 rounded-xl font-black text-center text-xs md:text-sm border border-rose-400 bg-rose-200 text-rose-950 pulse-alert-yellow";
+            } else {
+                dispRisiko.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 mr-1.5"></i> RISIKO JATUH : TIDAK`;
+                dispRisiko.className = "w-full py-2 px-3 rounded-xl font-bold text-center text-xs md:text-sm border border-emerald-300 bg-emerald-100 text-emerald-950";
+            }
+            document.getElementById('dispDiet').innerText = currentData.diet || '-';
+
+            // Card 5: Perawat Jaga Shift
+            document.getElementById('dispShiftPagi').innerText = currentData.shiftPagi || '-';
+            document.getElementById('dispShiftSiang').innerText = currentData.shiftSiang || '-';
+            document.getElementById('dispShiftMalam').innerText = currentData.shiftMalam || '-';
+
+            // Card 6: Rencana Asuhan Hari Ini
+            const containerAsuhan = document.getElementById('dispRencanaAsuhan');
+            containerAsuhan.innerHTML = '';
+            
+            const asuhanItems = [
+                { key: 'lab', title: 'Lab - Pemeriksaan Laboratorium', detailKey: 'detailLab', icon: 'fa-vial-virus' },
+                { key: 'rontgen', title: 'Rontgen / Radiologi', detailKey: 'detailRontgen', icon: 'fa-x-ray' },
+                { key: 'obat', title: 'Pemberian Obat-Obatan', detailKey: 'detailObat', icon: 'fa-pills' },
+                { key: 'gula', title: 'Cek Kadar Gula Puasa / GDA', detailKey: 'detailGula', icon: 'fa-droplet-degree' },
+                { key: 'mobilisasi', title: 'Mobilisasi / Fisioterapi', detailKey: 'detailMobilisasi', icon: 'fa-person-walking' }
+            ];
+
+            asuhanItems.forEach(item => {
+                const checked = currentData.rencanaAsuhan && currentData.rencanaAsuhan[item.key];
+                const detailVal = (currentData.rencanaAsuhan && currentData.rencanaAsuhan[item.detailKey]) || '';
+
+                containerAsuhan.innerHTML += `
+                    <div class="p-2 rounded-xl bg-white border border-emerald-200 shadow-sm flex items-start gap-2.5">
+                        <i class="${checked ? 'fa-solid fa-square-check text-emerald-600 text-base mt-0.5' : 'fa-regular fa-square text-slate-300 text-base mt-0.5'}"></i>
+                        <div class="flex-1">
+                            <span class="font-bold text-xs ${checked ? 'text-slate-900' : 'text-slate-400 line-through'}">${item.title}</span>
+                            ${checked && detailVal ? `<span class="block text-[11px] text-emerald-800 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100 mt-1">${esc(detailVal)}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            if (currentData.rencanaAsuhan && currentData.rencanaAsuhan.custom) {
+                containerAsuhan.innerHTML += `
+                    <div class="p-2 rounded-xl bg-emerald-100/80 border border-emerald-300 shadow-sm flex items-start gap-2">
+                        <i class="fa-solid fa-circle-plus text-emerald-700 text-sm mt-0.5"></i>
+                        <div>
+                            <span class="font-bold text-xs text-emerald-950">${esc(currentData.rencanaAsuhan.custom)}</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Card 7 & 8: Edukasi Yang Sudah Diberikan
+            const containerEdukasi = document.getElementById('dispEdukasi');
+            containerEdukasi.innerHTML = '';
+
+            const edukasiItems = [
+                { 
+                    key: 'cuciTangan', 
+                    title: 'Cuci Tangan 6 Langkah', 
+                    desc: 'Etika 6 langkah kebersihan tangan WHO', 
+                    icon: 'fa-hands-bubbles' 
+                },
+                { 
+                    key: 'etikaBatuk', 
+                    title: 'Etika Batuk Secara Jelas', 
+                    desc: 'Tutup mulut/hidung dengan tisu/siku dalam', 
+                    icon: 'fa-head-side-cough' 
+                },
+                { 
+                    key: 'nutrisi', 
+                    title: 'Nutrisi & Cairan Diet', 
+                    desc: 'Makanan sesuai diet & pemenuhan cairan', 
+                    icon: 'fa-utensils' 
+                },
+                { 
+                    key: 'pembatasanCairan', 
+                    title: 'Pembatasan Asupan Cairan', 
+                    desc: currentData.edukasi?.detailCairan || 'Batasi sesuai instruksi DPJP', 
+                    icon: 'fa-bottle-water' 
+                }
+            ];
+
+            edukasiItems.forEach(item => {
+                const checked = currentData.edukasi && currentData.edukasi[item.key];
+                containerEdukasi.innerHTML += `
+                    <div class="flex items-start gap-2.5 p-2.5 rounded-xl ${checked ? 'bg-white border-2 border-emerald-400 shadow-sm' : 'bg-slate-100/70 border border-slate-200 opacity-60'} transition">
+                        <div class="mt-0.5 text-base ${checked ? 'text-emerald-600' : 'text-slate-400'}">
+                            <i class="${checked ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle'}"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs font-extrabold block ${checked ? 'text-slate-900' : 'text-slate-500'}">${item.title}</span>
+                            <span class="text-[10px] block ${checked ? 'text-slate-600 font-medium' : 'text-slate-400'}">${esc(item.desc)}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            if (currentData.edukasi && currentData.edukasi.custom) {
+                containerEdukasi.innerHTML += `
+                    <div class="col-span-1 md:col-span-4 flex items-center gap-2 p-2.5 rounded-xl bg-emerald-100 border border-emerald-300">
+                        <i class="fa-solid fa-note-sticky text-emerald-700 text-sm"></i>
+                        <span class="text-xs font-bold text-emerald-950">Edukasi Tambahan: ${esc(currentData.edukasi.custom)}</span>
+                    </div>
+                `;
+            }
+
+            // Card 9: Footer (Tgl Pulang & Kontak)
+            if (currentData.tglPulang) {
+                const dateObj = new Date(currentData.tglPulang + 'T00:00:00');
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                document.getElementById('dispTglPulang').innerText = dateObj.toLocaleDateString('id-ID', options);
+                
+                // Calculate Days Left
+                const today = new Date();
+                today.setHours(0,0,0,0);
+                const diffTime = dateObj - today;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                const estimasiElem = document.getElementById('dispEstimasiHari');
+                if (diffDays > 0) {
+                    estimasiElem.innerText = `(Estimasi ${diffDays} Hari Lagi)`;
+                } else if (diffDays === 0) {
+                    estimasiElem.innerText = `(Rencana Pulang HARI INI)`;
+                } else {
+                    estimasiElem.innerText = `(Lewat ${Math.abs(diffDays)} hari dari estimasi)`;
+                }
+            } else {
+                document.getElementById('dispTglPulang').innerText = 'Belum Ditentukan';
+                document.getElementById('dispEstimasiHari').innerText = '';
+            }
+
+            document.getElementById('dispNamaKeluarga').innerText = currentData.namaKeluarga || '-';
+            document.getElementById('dispHpKeluarga').innerText = currentData.hpKeluarga || '-';
+
+            // Render Dynamic QR Code
+            generateQRCode();
+        }
+
+        // Fill Form Inputs when Opening Modal
+        function populateFormWithCurrentData() {
+            document.getElementById('inputRuangan').value = currentData.ruangan || '';
+            document.getElementById('inputNama').value = currentData.nama || '';
+            document.getElementById('inputBed').value = currentData.bed || '';
+            document.getElementById('inputUsia').value = currentData.usia || '';
+            document.getElementById('inputDokter').value = currentData.dokter || '';
+            document.getElementById('inputKontakDokter').value = currentData.kontakDokter || '';
+            document.getElementById('inputAlergi').value = currentData.alergi || '';
+            document.getElementById('inputRisikoJatuh').value = currentData.risikoJatuh || 'Tidak';
+            document.getElementById('inputDiet').value = currentData.diet || '';
+            document.getElementById('inputShiftPagi').value = currentData.shiftPagi || '';
+            document.getElementById('inputShiftSiang').value = currentData.shiftSiang || '';
+            document.getElementById('inputShiftMalam').value = currentData.shiftMalam || '';
+
+            // Rencana Asuhan Checkboxes & Inputs
+            const r = currentData.rencanaAsuhan || {};
+            document.getElementById('chkLab').checked = !!r.lab;
+            document.getElementById('inputDetailLab').value = r.detailLab || '';
+            document.getElementById('chkRontgen').checked = !!r.rontgen;
+            document.getElementById('inputDetailRontgen').value = r.detailRontgen || '';
+            document.getElementById('chkObat').checked = !!r.obat;
+            document.getElementById('inputDetailObat').value = r.detailObat || '';
+            document.getElementById('chkGula').checked = !!r.gula;
+            document.getElementById('inputDetailGula').value = r.detailGula || '';
+            document.getElementById('chkMobilisasi').checked = !!r.mobilisasi;
+            document.getElementById('inputDetailMobilisasi').value = r.detailMobilisasi || '';
+            document.getElementById('inputAsuhanCustom').value = r.custom || '';
+
+            // Edukasi Checkboxes & Inputs
+            const ed = currentData.edukasi || {};
+            document.getElementById('chkCuciTangan').checked = !!ed.cuciTangan;
+            document.getElementById('chkEtikaBatuk').checked = !!ed.etikaBatuk;
+            document.getElementById('chkNutrisi').checked = !!ed.nutrisi;
+            document.getElementById('chkPembatasanCairan').checked = !!ed.pembatasanCairan;
+            document.getElementById('inputDetailCairan').value = ed.detailCairan || '';
+            document.getElementById('inputEdukasiCustom').value = ed.custom || '';
+
+            // Tanggal Pulang & Kontak
+            document.getElementById('inputTglPulang').value = currentData.tglPulang || '';
+            document.getElementById('inputNamaKeluarga').value = currentData.namaKeluarga || '';
+            document.getElementById('inputHpKeluarga').value = currentData.hpKeluarga || '';
+        }
+
+        // Preset Alergi Quick Button
+        function setAlergiPreset(val) {
+            document.getElementById('inputAlergi').value = val;
+        }
+
+        // Save Form Data Event Listener
+        function savePatientData(e) {
+            e.preventDefault();
+
+            currentData = {
+                ruangan: document.getElementById('inputRuangan').value,
+                nama: document.getElementById('inputNama').value,
+                bed: document.getElementById('inputBed').value,
+                usia: document.getElementById('inputUsia').value,
+                dokter: document.getElementById('inputDokter').value,
+                kontakDokter: document.getElementById('inputKontakDokter').value,
+                alergi: document.getElementById('inputAlergi').value,
+                risikoJatuh: document.getElementById('inputRisikoJatuh').value,
+                diet: document.getElementById('inputDiet').value,
+                shiftPagi: document.getElementById('inputShiftPagi').value,
+                shiftSiang: document.getElementById('inputShiftSiang').value,
+                shiftMalam: document.getElementById('inputShiftMalam').value,
+                rencanaAsuhan: {
+                    lab: document.getElementById('chkLab').checked,
+                    detailLab: document.getElementById('inputDetailLab').value,
+                    rontgen: document.getElementById('chkRontgen').checked,
+                    detailRontgen: document.getElementById('inputDetailRontgen').value,
+                    obat: document.getElementById('chkObat').checked,
+                    detailObat: document.getElementById('inputDetailObat').value,
+                    gula: document.getElementById('chkGula').checked,
+                    detailGula: document.getElementById('inputDetailGula').value,
+                    mobilisasi: document.getElementById('chkMobilisasi').checked,
+                    detailMobilisasi: document.getElementById('inputDetailMobilisasi').value,
+                    custom: document.getElementById('inputAsuhanCustom').value
+                },
+                edukasi: {
+                    cuciTangan: document.getElementById('chkCuciTangan').checked,
+                    etikaBatuk: document.getElementById('chkEtikaBatuk').checked,
+                    nutrisi: document.getElementById('chkNutrisi').checked,
+                    pembatasanCairan: document.getElementById('chkPembatasanCairan').checked,
+                    detailCairan: document.getElementById('inputDetailCairan').value,
+                    custom: document.getElementById('inputEdukasiCustom').value
+                },
+                tglPulang: document.getElementById('inputTglPulang').value,
+                namaKeluarga: document.getElementById('inputNamaKeluarga').value,
+                hpKeluarga: document.getElementById('inputHpKeluarga').value
+            };
+
+            saveDataToStorage();
+            renderDisplay();
+            closeEditModal();
+            showToast("Data papan informasi pasien Kaizen berhasil disimpan!");
+        }
+
+        // Generate Dynamically QR Code Payload
+        function generateQRCode() {
+            const qrContainer = document.getElementById('qrcode');
+            qrContainer.innerHTML = '';
+
+            const qrText = `RSUD R.T. NOTOPURO SIDOARJO\nSi-Cantik E-PAPAN PASIEN\nRuang: ${currentData.ruangan}\nNama: ${currentData.nama} (${currentData.usia} Thn)\nNo Bed: ${currentData.bed}\nDPJP: ${currentData.dokter}\nAlergi: ${currentData.alergi || 'Tidak Ada'}\nRisiko Jatuh: ${currentData.risikoJatuh}`;
+
+            try {
+                new QRCode(qrContainer, {
+                    text: qrText,
+                    width: 60,
+                    height: 60,
+                    colorDark: "#0f172a",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.M
+                });
+            } catch (err) {
+                console.error("Gagal generate QR Code", err);
+            }
+        }
+
+        // Toast Notification Helper
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.innerText = msg;
+            toast.classList.remove('hidden');
+
+            clearTimeout(window._tt); window._tt = setTimeout(() => toast.classList.add('hidden'), 3000);
+        }
+    </script>
+
+    <!-- KAIZEN EXTENSION -->
+    <script>
+        const KRS = ['Kondisi klinis stabil', 'Hasil penunjang sudah dievaluasi', 'Obat pulang & jadwal kontrol disiapkan', 'Edukasi pulang diberikan ke keluarga', 'Administrasi / BPJS selesai'];
+        const REQS = [['Minta air minum', 'fa-glass-water'], ['Butuh bantuan ke toilet', 'fa-restroom'], ['Nyeri / tidak nyaman', 'fa-face-frown'], ['Panggil perawat', 'fa-bell-concierge']];
+        const TASKS = [['lab', 'Laboratorium'], ['rontgen', 'Radiologi'], ['obat', 'Pemberian obat'], ['gula', 'Cek gula darah'], ['mobilisasi', 'Mobilisasi']];
+        const ROLE_LABEL = { nurse: 'perawat', doctor: 'dokter', patient: 'pasien' };
+        const EMO = ['😞', '🙁', '😐', '🙂', '😍'];
+
+        function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+        function nowHM() { return new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace(':', '.'); }
+        function kz() {
+            const d = currentData;
+            d.requests = d.requests || []; d.krs = d.krs || {}; d.asuhanDone = d.asuhanDone || {};
+            d.visite = d.visite || { catatan: '', instruksi: '', waktu: '' };
+            return d;
+        }
+        function persist(by) {
+            const d = kz();
+            if (by) { d.updatedAt = nowHM(); d.updatedBy = by; }
+            saveDataToStorage(); renderKaizen();
+        }
+
+        // Roles: perawat, dokter, pasien/keluarga
+        function switchUserRole(role) {
+            userRole = role;
+            const cfg = { nurse: ['roleNurseBtn', 'bg-blue-600'], doctor: ['roleDoctorBtn', 'bg-violet-600'], patient: ['rolePatientBtn', 'bg-emerald-600'] };
+            for (const k in cfg) {
+                document.getElementById(cfg[k][0]).className = 'px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5 ' + (k === role ? 'font-bold text-white shadow ' + cfg[k][1] : 'font-semibold text-slate-300 hover:text-white');
+            }
+            document.getElementById('nurseActions').classList.toggle('hidden', role !== 'nurse');
+            const b = document.getElementById('patientModeBanner');
+            b.classList.toggle('hidden', role === 'nurse');
+            b.querySelector('span').innerHTML = role === 'doctor'
+                ? '<strong>Mode Dokter:</strong> Anda dapat mengisi visite &amp; instruksi, serta memperbarui kriteria pulang. Data identitas hanya diubah oleh perawat.'
+                : '<strong>Mode Pasien / Keluarga:</strong> Papan hanya dapat dilihat. Anda dapat mengirim permintaan dan penilaian pelayanan.';
+            closeEditModal(); renderKaizen(true);
+            showToast('Beralih ke Mode ' + (role === 'nurse' ? 'Perawat' : role === 'doctor' ? 'Dokter' : 'Pasien / Keluarga'));
+        }
+
+        function toggleTask(k) { if (userRole === 'patient') return; const d = kz(); d.asuhanDone[k] = !d.asuhanDone[k]; persist(ROLE_LABEL[userRole]); }
+        function toggleKrs(i) { if (userRole === 'patient') return; const d = kz(); d.krs[i] = !d.krs[i]; persist(ROLE_LABEL[userRole]); }
+        function addReq(i) { const d = kz(); d.requests.unshift({ id: Date.now(), text: REQS[i][0], time: nowHM(), done: false }); d.requests = d.requests.slice(0, 20); persist(); showToast('Permintaan terkirim ke perawat jaga'); }
+        function doneReq(id) { if (userRole === 'patient') return; const r = kz().requests.find(x => x.id === id); if (r) r.done = true; persist(ROLE_LABEL[userRole]); }
+        function setRating(n) { kz().rating = n; persist(); }
+        function sendFeedback() {
+            const d = kz(), v = document.getElementById('inpFeedback').value.trim();
+            if (!d.rating && !v) { showToast('Pilih penilaian atau tulis masukan terlebih dahulu'); return; }
+            if (v) d.feedback = v + ' (' + nowHM() + ')';
+            document.getElementById('inpFeedback').value = '';
+            persist(); showToast('Terima kasih atas masukan Anda');
+        }
+        function saveVisite() {
+            const d = kz();
+            d.visite = { catatan: document.getElementById('visiteCatatan').value.trim(), instruksi: document.getElementById('visiteInstruksi').value.trim(), waktu: nowHM() };
+            persist('dokter'); showToast('Visite DPJP tersimpan');
+        }
+
+        function renderKaizen(fill) {
+            const d = kz(), r = d.rencanaAsuhan || {}, can = userRole !== 'patient';
+            // Visite
+            const v = d.visite;
+            document.getElementById('dispVisite').innerHTML = (v.catatan || v.instruksi)
+                ? `<div class="bg-white p-2.5 rounded-xl border border-violet-200"><span class="text-[10px] font-bold text-violet-700 uppercase block">Kondisi / hasil visite</span><span class="font-semibold text-slate-900">${esc(v.catatan) || '-'}</span></div>
+                   <div class="bg-white p-2.5 rounded-xl border border-violet-200"><span class="text-[10px] font-bold text-violet-700 uppercase block">Instruksi</span><span class="font-semibold text-slate-900">${esc(v.instruksi) || '-'}</span></div>
+                   <div class="text-[10px] text-violet-700 font-semibold text-right">Dicatat pukul ${esc(v.waktu)} WIB</div>`
+                : '<div class="text-slate-500 italic bg-white/70 p-2.5 rounded-xl border border-dashed border-violet-300">Visite hari ini belum dicatat oleh DPJP.</div>';
+            document.getElementById('visiteEdit').classList.toggle('hidden', userRole !== 'doctor');
+            if (fill) { document.getElementById('visiteCatatan').value = v.catatan; document.getElementById('visiteInstruksi').value = v.instruksi; }
+
+            // Progress tindakan
+            const T = TASKS.filter(t => r[t[0]]), done = T.filter(t => d.asuhanDone[t[0]]).length, pct = T.length ? Math.round(done / T.length * 100) : 0;
+            document.getElementById('barProgress').style.width = pct + '%';
+            document.getElementById('txtProgress').innerText = T.length ? `${done}/${T.length} • ${pct}%` : 'Tidak ada tindakan';
+            const row = (on, label, fn) => `<button type="button" ${can ? `onclick="${fn}"` : 'disabled'} class="w-full text-left flex items-center gap-2 px-2 py-1 rounded-lg bg-white border ${on ? 'border-emerald-300' : 'border-slate-200'} ${can ? 'hover:bg-sky-50' : 'cursor-default'}"><i class="${on ? 'fa-solid fa-square-check text-emerald-600' : 'fa-regular fa-square text-slate-400'}"></i><span class="font-semibold ${on ? 'text-slate-500 line-through' : 'text-slate-900'}">${label}</span></button>`;
+            document.getElementById('dispTasks').innerHTML = T.map(t => row(!!d.asuhanDone[t[0]], t[1], `toggleTask('${t[0]}')`)).join('') || '<div class="text-slate-500 italic">Belum ada tindakan terjadwal.</div>';
+            document.getElementById('dispKrs').innerHTML = KRS.map((k, i) => row(!!d.krs[i], k, `toggleKrs(${i})`)).join('');
+            const kd = KRS.filter((_, i) => d.krs[i]).length;
+            document.getElementById('txtKrs').innerText = `${kd}/${KRS.length}` + (kd === KRS.length ? ' ✓ Siap pulang' : '');
+
+            // Suara pasien
+            document.getElementById('reqButtons').innerHTML = REQS.map((q, i) => `<button type="button" onclick="addReq(${i})" class="flex items-center gap-1.5 px-2 py-2 rounded-xl bg-white border border-amber-300 text-[11px] font-bold text-amber-950 hover:bg-amber-100 text-left"><i class="fa-solid ${q[1]} text-amber-600"></i>${q[0]}</button>`).join('');
+            document.getElementById('reqNote').classList.toggle('hidden', !(d.edukasi && d.edukasi.pembatasanCairan));
+            const open = d.requests.filter(x => !x.done).length, badge = document.getElementById('badgeReq');
+            badge.classList.toggle('hidden', !open); badge.innerText = open + ' menunggu';
+            document.getElementById('cardSuara').classList.toggle('pulse-alert-yellow', open > 0 && can);
+            document.getElementById('dispReq').innerHTML = d.requests.slice(0, 4).map(q => `<div class="flex items-center justify-between gap-2 bg-white rounded-lg border ${q.done ? 'border-slate-200 opacity-60' : 'border-amber-300'} px-2 py-1"><span class="font-semibold text-slate-900">${esc(q.text)} <span class="text-slate-500 font-normal">${esc(q.time)}</span></span>${q.done ? '<span class="text-emerald-700 font-bold text-[10px]">Ditangani</span>' : can ? `<button class="no-print text-[10px] font-bold bg-emerald-600 text-white px-2 py-0.5 rounded-md" onclick="doneReq(${q.id})">Tangani</button>` : '<span class="text-amber-700 font-bold text-[10px]">Menunggu</span>'}</div>`).join('') || '<div class="text-slate-500 italic">Belum ada permintaan.</div>';
+            document.getElementById('dispRating').innerHTML = EMO.map((e, i) => `<button type="button" onclick="setRating(${i + 1})" aria-label="Nilai ${i + 1} dari 5" class="flex-1 py-1 rounded-lg text-lg border ${d.rating === i + 1 ? 'bg-amber-200 border-amber-500 scale-105' : 'bg-white border-amber-200 hover:bg-amber-100'}">${e}</button>`).join('');
+            document.getElementById('dispFeedback').innerHTML = d.feedback ? `Masukan terakhir: <em>${esc(d.feedback)}</em>` : '';
+            document.getElementById('dispVerif').innerText = d.updatedAt ? `Diperbarui ${d.updatedAt} oleh ${d.updatedBy}` : 'Belum diverifikasi';
+        }
+
+        // Hook ke alur bawaan
+        const _renderDisplay = renderDisplay;
+        renderDisplay = function () { _renderDisplay(); renderKaizen(true); };
+        const _savePatientData = savePatientData;
+        savePatientData = function (e) {
+            const keep = (({ requests, rating, feedback, visite, krs, asuhanDone }) => ({ requests, rating, feedback, visite, krs, asuhanDone }))(currentData);
+            _savePatientData(e);
+            Object.assign(currentData, keep);
+            persist('perawat'); renderKaizen(true);
+        };
+    </script>
+</body>
+</html>
